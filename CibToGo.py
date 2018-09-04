@@ -2,6 +2,9 @@ import subprocess
 import sys
 import os
 
+def gen_struct(f):
+    print(f)
+
 def run_cmd(cmd):
     try:
         proc = subprocess.Popen(cmd,
@@ -32,3 +35,5 @@ if __name__ == "__main__":
     #for f in os.listdir("pacemaker/xml"):
     #    if f.endswith(".rng"):
     #        print(f)
+    _file = "pacemaker/xml/nodes-3.0.rng"
+    gen_struct(_file)
