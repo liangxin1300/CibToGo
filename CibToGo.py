@@ -4,6 +4,38 @@ import os
 from lxml import etree, objectify
 
 
+class ElemNode:
+    def __init__(self, name=None):
+        self.name = name
+        self.children = []
+
+    def __str__(self):
+        return self.name
+
+
+class ChildNode:
+    def __init__(self, name, type, attr):
+        self.name = name
+        self.type = type
+        self.attr = attr
+
+    def __str__(self):
+        return self.name
+
+e1 = ElemNode("Nodes")
+c1 = ChildNode("Node", "array", "node;node")
+e1.children.append(c1)
+for item in e1.children:
+    print(item)
+
+e2 = ElemNode("Node")
+c2 = ChildNode("Id", "string", "id,attr;id")
+c3 = ChildNode("Uname", "string", "uname,attr;uname")
+e2.children.append(c2)
+e2.children.append(c3)
+for item in e2.children:
+    print(item)
+
 def file2cib_elem(f):
     cib_elem = None
     with open(f, 'r') as fd:
@@ -55,7 +87,7 @@ def run_cmd(cmd):
         return proc.returncode
 
 
-if __name__ == "__main__":
+if __name__ != "__main__":
     rc = run_cmd("which git")
     if rc != 0:
         print("Error: Please install git first")
