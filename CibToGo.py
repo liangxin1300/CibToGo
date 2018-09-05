@@ -3,6 +3,7 @@ import sys
 import os
 from lxml import etree, objectify
 
+
 def file2cib_elem(f):
     cib_elem = None
     with open(f, 'r') as fd:
@@ -23,6 +24,7 @@ def file2cib_elem(f):
         objectify.deannotate(cib_elem, cleanup_namespaces=True)
     return cib_elem
 
+
 def gen_struct(f):
     cib_elem = file2cib_elem(f)
     if cib_elem is None:
@@ -30,6 +32,7 @@ def gen_struct(f):
     for c in cib_elem.iterchildren():
         print(c.tag)
     return 0
+
 
 def run_cmd(cmd):
     try:
@@ -42,6 +45,7 @@ def run_cmd(cmd):
         print(err)
     finally:
         return proc.returncode
+
 
 if __name__ == "__main__":
     rc = run_cmd("which git")
