@@ -1,9 +1,35 @@
 import subprocess
 import sys
 import os
+from lxml import etree, objectify
+
+def file2cib_elem(f):
+    cib_elem = None
+    with open(f, 'r') as fd:
+        try:
+            cib_elem = etree.parse(fd).getroot()
+        except Exception as err:
+            print(err)
+            return None
+
+    # https://stackoverflow.com/questions/18159221/remove-namespace-and-prefix-from-xml-in-python-using-lxml
+    if cib_elem is not None:
+        for elem in cib_elem.getiterator():
+            if not hasattr(elem.tag, 'find'):
+                continue
+            i = elem.tag.find('}')
+            if i >= 0:
+                elem.tag = elem.tag[i+1:]
+        objectify.deannotate(cib_elem, cleanup_namespaces=True)
+    return cib_elem
 
 def gen_struct(f):
-    print(f)
+    cib_elem = file2cib_elem(f)
+    if cib_elem is None:
+        return -1
+    for c in cib_elem.iterchildren():
+        print(c.tag)
+    return 0
 
 def run_cmd(cmd):
     try:
@@ -36,4 +62,7 @@ if __name__ == "__main__":
     #    if f.endswith(".rng"):
     #        print(f)
     _file = "pacemaker/xml/nodes-3.0.rng"
-    gen_struct(_file)
+    rc = gen_struct(_file)
+    if rc != 0:
+        print("Error: gen_struct for %s failed!" % _file)
+        sys.exit(rc)
