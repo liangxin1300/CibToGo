@@ -12,6 +12,9 @@ class ElemNode:
     def __str__(self):
         return self.name
 
+    def append(self, child):
+        self.children.append(child)
+
 
 class ChildNode:
     def __init__(self, name, type, attr):
@@ -24,15 +27,15 @@ class ChildNode:
 
 e1 = ElemNode("Nodes")
 c1 = ChildNode("Node", "array", "node;node")
-e1.children.append(c1)
+e1.append(c1)
 for item in e1.children:
     print(item)
 
 e2 = ElemNode("Node")
 c2 = ChildNode("Id", "string", "id,attr;id")
 c3 = ChildNode("Uname", "string", "uname,attr;uname")
-e2.children.append(c2)
-e2.children.append(c3)
+e2.append(c2)
+e2.append(c3)
 for item in e2.children:
     print(item)
 
