@@ -29,8 +29,16 @@ def gen_struct(f):
     cib_elem = file2cib_elem(f)
     if cib_elem is None:
         return -1
-    for c in cib_elem.iterchildren():
-        print(c.tag)
+    print(cib_elem)
+    #for c in cib_elem.iterchildren():
+    #    print(c.tag)
+    #for c in cib_elem.findall("define"):
+    #    for i in c.findall("element"):
+    #        print(i.tag)
+    #for elem in cib_elem.getiterator():
+    #    if not hasattr(elem.tag, 'find'):
+    #        continue
+    #    print(elem.tag)
     return 0
 
 
