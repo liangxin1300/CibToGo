@@ -307,8 +307,7 @@ def run_cmd(cmd):
         return proc.returncode
 
 
-if __name__ == "__main__":
-
+def run(): 
     cmd = "rpm -q pacemaker-cli"
     rc = run_cmd(cmd)
     if rc != 0:

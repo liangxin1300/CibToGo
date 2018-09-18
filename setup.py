@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 
-from setuptools import setup
+from setuptools import setup, find_packages
 
-setup(name='CibToGo',
-      version='0.1',
+setup(name='cibToGoStruct',
+      packages=find_packages(),
+      version='0.3',
       author='Xin Liang',
       author_email='XLiang@suse.com',
-      scripts=['bin/cibToGo'],
+      scripts=['bin/cibToGoStruct'],
       install_requires=['lxml', 'jinja2'])
