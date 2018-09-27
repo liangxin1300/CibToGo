@@ -120,6 +120,9 @@ def node_exists(allnodes, node):
 
 
 class Node:
+    '''
+    stand for element
+    '''
     def __init__(self, name=None):
         self.name = name
         self.children = []
@@ -138,6 +141,9 @@ class Node:
 
 
 class ChildNode:
+    '''
+    stand for attribute
+    '''
     def __init__(self, name, type, xmltag="-", jsontag="-"):
         self.name = name
         self.type = type
@@ -149,6 +155,9 @@ class ChildNode:
 
 
 def file2cib_elem(f):
+    '''
+    open a xml file and get the root element
+    '''
     cib_elem = None
     with open(f, 'r') as fd:
         try:
@@ -188,9 +197,11 @@ def handle_child(allNodes, node, rng=None, elem=None, root=None, child_type=None
     for item in elem.iterchildren():
         name = item.get("name")
         if name and name.endswith("-unsupported"):
+            # skip unsupported item
             continue
         href = item.get("href")
 
+        # store old values
         old_childtype = child_type
         old_xmltag = xmltag
         old_jsontag = jsontag
@@ -198,10 +209,13 @@ def handle_child(allNodes, node, rng=None, elem=None, root=None, child_type=None
         if item.tag in ("start", "interleave", "optional", "choice",
                         "zeroOrMore", "group", "grammar", "oneOrMore"):
             if item.tag in ("optional", "choice", "zeroOrMore"):
+                # maybe not exists in cib, so json tag should be "omitempty"
                 if "omitempty" not in jsontag:
                     jsontag = ",omitempty" + jsontag
             if item.tag in ("zeroOrMore", "oneOrMore"):
+                # maybe more then one, so use "slice" to store them
                 child_type = "slice"
+            # recursively find thie item's child element
             handle_child(allNodes, node, elem=item, root=root, child_type=child_type, xmltag=xmltag, jsontag=jsontag)
 
 
@@ -215,10 +229,14 @@ def handle_child(allNodes, node, rng=None, elem=None, root=None, child_type=None
             if child_type != "slice":
                 child_type = name
 
+            # add this element tag as this parent element node's children
             node.append(ChildNode(name, child_type, xmltag, jsontag))
+            # create a new node(go class) for an element tag
             new_node = Node(name)
             if not node_exists(allNodes, new_node):
+                # append this new node to the global node list
                 allNodes.append(new_node)
+                # recursively collect this new node's children list
                 handle_child(allNodes, new_node, elem=item, root=root)
 
 
@@ -231,6 +249,7 @@ def handle_child(allNodes, node, rng=None, elem=None, root=None, child_type=None
             xmltag = name + xmltag
             jsontag = name + jsontag
 
+            # add this attribute tag as this element node's children
             node.append(ChildNode(name, child_type, xmltag, jsontag))
 
 
@@ -241,15 +260,17 @@ def handle_child(allNodes, node, rng=None, elem=None, root=None, child_type=None
             for elem in root.getiterator():
                 ename = elem.get('name')
                 if elem.tag == "define" and ename and ename == name:
+                    # recursively find the element in 'ref' tag
                     handle_child(allNodes, node, elem=elem, root=root, child_type=child_type, xmltag=xmltag, jsontag=jsontag)
 
 
         if item.tag in ("include", "externalRef"):
             if href is None or not href.endswith(".rng"):
                 continue
+            # recursively read the related rng file
             handle_child(allNodes, node, rng=href, child_type=child_type, xmltag=xmltag, jsontag=jsontag)
 
-
+        # recover old values
         childtype = old_childtype
         xmltag = old_xmltag
         jsontag = old_jsontag
@@ -263,6 +284,7 @@ def gen_struct(f):
 
     allNodes = []
 
+    # start from pacemaker.rng file and the cib element
     for elem in root.getiterator():
         name = elem.get('name')
         if name and name == "cib":
