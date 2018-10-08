@@ -16,60 +16,6 @@ type TypeIndex struct {
 """
 
 
-marshalJSONTemplate = """
-func (c *Cib) MarshalJSON() ([]byte, error) {
-        var jsonValue []byte
-        var err error
-
-        switch c.Configuration.URLType {
-        case "nodes":
-                switch c.Configuration.Nodes.URLType {
-                case "all":
-                        jsonValue, err = json.Marshal(c.Configuration.Nodes.Node)
-                case "node":
-                        index := c.Configuration.Nodes.URLIndex
-                        jsonValue, err = json.Marshal(c.Configuration.Nodes.Node[index])
-                }
-        case "cluster":
-		jsonValue, err = json.Marshal(c.Configuration.CrmConfig)
-	case "resources":
-                switch c.Configuration.Resources.URLType {
-                case "all":
-                        jsonValue, err = json.Marshal(c.Configuration.Resources)
-                case "primitive":
-                        index := c.Configuration.Resources.URLIndex
-                        jsonValue, err = json.Marshal(c.Configuration.Resources.Primitive[index])
-                case "group":
-                        index := c.Configuration.Resources.URLIndex
-                        jsonValue, err = json.Marshal(c.Configuration.Resources.Group[index])
-                case "clone":
-                        index := c.Configuration.Resources.URLIndex
-                        jsonValue, err = json.Marshal(c.Configuration.Resources.Clone[index])
-                case "master":
-                        index := c.Configuration.Resources.URLIndex
-                        jsonValue, err = json.Marshal(c.Configuration.Resources.Master[index])
-                }
-	case "constraints":
-                switch c.Configuration.Constraints.URLType {
-                case "all":
-                        jsonValue, err = json.Marshal(c.Configuration.Constraints)
-                case "location":
-                        index := c.Configuration.Constraints.URLIndex
-                        jsonValue, err = json.Marshal(c.Configuration.Constraints.RscLocation[index])
-                case "colocation":
-                        index := c.Configuration.Constraints.URLIndex
-                        jsonValue, err = json.Marshal(c.Configuration.Constraints.RscColocation[index])
-                case "order":
-                        index := c.Configuration.Constraints.URLIndex
-                        jsonValue, err = json.Marshal(c.Configuration.Constraints.RscOrder[index])
-                }
-	}
-       
-	return jsonValue, err
-}
-"""
-
-
 goStructTemplate = """
 {%- macro struct_type(child) -%}
     {%- if child.type.startswith("point_") or child.type.startswith("slice_") %}
@@ -299,7 +245,6 @@ def gen_struct(f):
 
     import (
         "encoding/xml"
-        "encoding/json"
 )
 
     """
@@ -307,8 +252,7 @@ def gen_struct(f):
         env = Environment(trim_blocks=True)
         env.globals['convert_name'] = convert_name
         res += env.from_string(goStructTemplate).render(node=node) + "\n\n"
-    res += otherStructTemplate + "\n\n"
-    res += marshalJSONTemplate
+    res += otherStructTemplate
 
     with open("api_structs.go", 'w') as f:
         f.write(res)
