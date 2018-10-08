@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 
 setup(name='cibToGoStruct',
       packages=find_packages(),
-      version='0.3',
+      version='0.5',
       author='Xin Liang',
       author_email='XLiang@suse.com',
       scripts=['bin/cibToGoStruct'],
