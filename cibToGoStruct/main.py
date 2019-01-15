@@ -289,3 +289,6 @@ def run():
     if rc != 0:
         print("Error: gen_struct for %s failed!" % start_file)
         sys.exit(rc)
+
+if __name__ == '__main__':
+    run()
