@@ -218,6 +218,9 @@ def gen_struct(f):
 
     # start from pacemaker.rng file and the cib element
     for elem in root.getiterator():
+        if f == "crm_mon.xml":
+            print(elem)
+            continue
         name = elem.get('name')
         if name and name == "cib":
             node = Node("cib")
@@ -265,15 +268,16 @@ def run():
         print("Error: Please install pacemaker-cli first!")
         sys.exit(rc)
 
-    start_file = "/usr/share/pacemaker/pacemaker.rng"
-    if not os.path.exists(start_file):
-        print("Error: %s not exists!" % start_file)
-        sys.exit(-1)
+    start_files = ["/usr/share/pacemaker/pacemaker.rng", "crm_mon.xml"]
+    for start_file in start_files:
+        if not os.path.exists(start_file):
+            print("Error: %s not exists!" % start_file)
+            sys.exit(-1)
     
-    rc = gen_struct(start_file)
-    if rc != 0:
-        print("Error: gen_struct for %s failed!" % start_file)
-        sys.exit(rc)
+        rc = gen_struct(start_file)
+        if rc != 0:
+            print("Error: gen_struct for %s failed!" % start_file)
+            sys.exit(rc)
 
 if __name__ == '__main__':
     run()
