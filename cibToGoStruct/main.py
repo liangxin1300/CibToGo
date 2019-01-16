@@ -219,8 +219,14 @@ def gen_struct(f):
     # start from pacemaker.rng file and the cib element
     for elem in root.getiterator():
         if f == "crm_mon.xml":
-            print(elem)
-            continue
+            if elem.tag == "crm_mon":
+                node = Node(elem.tag)
+                allNodes.append(node)
+                for node in allNodes:
+                    print(node)
+                handle_child(allNodes, node, elem=elem)
+                break
+
         name = elem.get('name')
         if name and name == "cib":
             node = Node("cib")
