@@ -8,14 +8,6 @@ from lxml import etree, objectify
 from jinja2 import Environment
 
 
-otherStructTemplate = """
-type TypeIndex struct {
-        Type  string
-        Index int
-}
-"""
-
-
 goStructTemplate = """
 {%- macro struct_type(child) -%}
     {%- if child.type.startswith("point_") or child.type.startswith("slice_") %}
@@ -40,12 +32,6 @@ type {{ convert_name(node.name) }} struct {
 {% for child in node.children %}
     {{ convert_name(child.name) }}{{ struct_type(child) }}{{ struct_tag(child) }}
 {% endfor %}
-{% if node.name in ("configuration", "nodes", "resources", "constraints") %}
-    URLType string    `json:"-"`
-{% endif %}
-{% if node.name in ("nodes", "resources", "constraints") %}
-    URLIndex int    `json:"-"`
-{% endif %}
 }
 """
 
@@ -252,7 +238,6 @@ def gen_struct(f):
         env = Environment(trim_blocks=True)
         env.globals['convert_name'] = convert_name
         res += env.from_string(goStructTemplate).render(node=node) + "\n\n"
-    res += otherStructTemplate
 
     with open("api_structs.go", 'w') as f:
         f.write(res)
