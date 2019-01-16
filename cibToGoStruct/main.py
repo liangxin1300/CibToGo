@@ -229,6 +229,9 @@ def gen_struct(f):
             break
 
 
+    if f == "crm_mon.xml":
+        return       
+
     res = """
     package main
 
