@@ -110,12 +110,17 @@ def file2cib_elem(f):
     return cib_elem
 
 
-def handle_status_child(allNodes, node, elem=None):
-    if elem is not None and len(elem) == 0:
-        return
+def handle_status_child(allNodes, node, elem=None, child_type="string"):
     for item in elem.iterchildren():
-        print(item.tag)
-        handle_status_child(allNodes, node, elem=item)
+        if len(item) != 0:
+            handle_status_child(allNodes, node, elem=item)
+        else:
+            print(item.tag)
+            print(item.attrib)
+        #node.append(ChildNode(item.tag, child_type))
+        #new_node = Node(item.tag)
+        #if not node_exists(allNodes, new_node):
+        #    allNodes.append(new_node)
 
 
 def handle_schema_child(allNodes, node, rng=None, elem=None, root=None, child_type=None, xmltag="", jsontag=""):
@@ -230,9 +235,9 @@ def gen_struct(f):
             if elem.tag == "crm_mon":
                 node = Node(elem.tag)
                 allNodes.append(node)
-                for node in allNodes:
-                    print(node)
                 handle_status_child(allNodes, node, elem=elem)
+                #for node in allNodes:
+                #    print(node)
                 break
 
         name = elem.get('name')
