@@ -110,7 +110,15 @@ def file2cib_elem(f):
     return cib_elem
 
 
-def handle_child(allNodes, node, rng=None, elem=None, root=None, child_type=None, xmltag="", jsontag=""):
+def handle_status_child(allNodes, node, elem=None):
+    if elem is not None and len(elem) == 0:
+        return
+    for item in elem.iterchildren():
+        print(item.tag)
+        handle_status_child(allNodes, node, elem=item)
+
+
+def handle_schema_child(allNodes, node, rng=None, elem=None, root=None, child_type=None, xmltag="", jsontag=""):
 
     if rng:
         rng_file = os.path.join("/usr/share/pacemaker", rng)
@@ -148,7 +156,7 @@ def handle_child(allNodes, node, rng=None, elem=None, root=None, child_type=None
                 # maybe more then one, so use "slice" to store them
                 child_type = "slice"
             # recursively find thie item's child element
-            handle_child(allNodes, node, elem=item, root=root, child_type=child_type, xmltag=xmltag, jsontag=jsontag)
+            handle_schema_child(allNodes, node, elem=item, root=root, child_type=child_type, xmltag=xmltag, jsontag=jsontag)
 
 
         if item.tag == "element":
@@ -169,7 +177,7 @@ def handle_child(allNodes, node, rng=None, elem=None, root=None, child_type=None
                 # append this new node to the global node list
                 allNodes.append(new_node)
                 # recursively collect this new node's children list
-                handle_child(allNodes, new_node, elem=item, root=root)
+                handle_schema_child(allNodes, new_node, elem=item, root=root)
 
 
         if item.tag == "attribute":
@@ -193,14 +201,14 @@ def handle_child(allNodes, node, rng=None, elem=None, root=None, child_type=None
                 ename = elem.get('name')
                 if elem.tag == "define" and ename and ename == name:
                     # recursively find the element in 'ref' tag
-                    handle_child(allNodes, node, elem=elem, root=root, child_type=child_type, xmltag=xmltag, jsontag=jsontag)
+                    handle_schema_child(allNodes, node, elem=elem, root=root, child_type=child_type, xmltag=xmltag, jsontag=jsontag)
 
 
         if item.tag in ("include", "externalRef"):
             if href is None or not href.endswith(".rng"):
                 continue
             # recursively read the related rng file
-            handle_child(allNodes, node, rng=href, child_type=child_type, xmltag=xmltag, jsontag=jsontag)
+            handle_schema_child(allNodes, node, rng=href, child_type=child_type, xmltag=xmltag, jsontag=jsontag)
 
         # recover old values
         childtype = old_childtype
@@ -224,14 +232,14 @@ def gen_struct(f):
                 allNodes.append(node)
                 for node in allNodes:
                     print(node)
-                handle_child(allNodes, node, elem=elem)
+                handle_status_child(allNodes, node, elem=elem)
                 break
 
         name = elem.get('name')
         if name and name == "cib":
             node = Node("cib")
             allNodes.append(node)
-            handle_child(allNodes, node, elem=elem)
+            handle_schema_child(allNodes, node, elem=elem)
             break
 
 
