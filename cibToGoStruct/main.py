@@ -127,14 +127,15 @@ def handle_status_child(allNodes, node, elem=None, child_type=None, xmltag="", j
             new_node = Node(item.tag)
             if not node_exists(allNodes, new_node):
                 allNodes.append(new_node)
-            handle_status_child(allNodes, new_node, elem=item)
-        # no child
-        elif item.attrib:
-            # his children are all same
             if len(set(item)) == 1:
                 child_type = "slice"
             else:
                 child_type = item.tag
+            handle_status_child(allNodes, new_node, elem=item, child_type=child_type)
+        # no child
+        elif item.attrib:
+            # his children are all same
+            child_type = child_type
             xmltag = item.tag
             jsontag = item.tag
             node.append(ChildNode(item.tag, child_type, xmltag, jsontag))
