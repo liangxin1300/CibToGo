@@ -110,8 +110,13 @@ def file2cib_elem(f):
     return cib_elem
 
 
-def handle_status_child(allNodes, node, elem=None, child_type="string"):
+def handle_status_child(allNodes, node, elem=None, child_type=None, xmltag="", jsontag=""):
     for item in elem.iterchildren():
+        # store old values
+        old_childtype = child_type
+        old_xmltag = xmltag
+        old_jsontag = jsontag
+
         # do have children
         if len(item) != 0:
             node.append(ChildNode(item.tag, item.tag))
@@ -126,6 +131,11 @@ def handle_status_child(allNodes, node, elem=None, child_type="string"):
         #new_node = Node(item.tag)
         #if not node_exists(allNodes, new_node):
         #    allNodes.append(new_node)
+
+        # recover old values
+        childtype = old_childtype
+        xmltag = old_xmltag
+        jsontag = old_jsontag
 
 
 def handle_schema_child(allNodes, node, rng=None, elem=None, root=None, child_type=None, xmltag="", jsontag=""):
