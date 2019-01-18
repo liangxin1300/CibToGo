@@ -112,12 +112,14 @@ def file2cib_elem(f):
 
 def handle_status_child(allNodes, node, elem=None, child_type="string"):
     for item in elem.iterchildren():
+        # do have children
         if len(item) != 0:
-            node.append(ChildNode(item.tag, child_type))
+            node.append(ChildNode(item.tag, item.tag))
             new_node = Node(item.tag)
             if not node_exists(allNodes, new_node):
                 allNodes.append(new_node)
             handle_status_child(allNodes, new_node, elem=item)
+        # no child
         else:
             for key in item.attrib.keys():
                 node.append(ChildNode(key, child_type))
@@ -239,9 +241,9 @@ def gen_struct(f):
                 node = Node(elem.tag)
                 allNodes.append(node)
                 handle_status_child(allNodes, node, elem=elem)
-                #for node in allNodes:
-                #    print(node)
-                #    print("")
+                for node in allNodes:
+                    print(node)
+                    print("")
                 break
 
         name = elem.get('name')
@@ -249,11 +251,10 @@ def gen_struct(f):
             node = Node("cib")
             allNodes.append(node)
             handle_schema_child(allNodes, node, elem=elem)
-            #for node in allNodes:
-            #    print(node)
-            #    print("")
+            for node in allNodes:
+                print(node)
+                print("")
             break
-
 
     if f == "crm_mon.xml":
         return       
@@ -307,6 +308,7 @@ def run():
         if rc != 0:
             print("Error: gen_struct for %s failed!" % start_file)
             sys.exit(rc)
+        print("\n\n\n\n")
 
 if __name__ == '__main__':
     run()
