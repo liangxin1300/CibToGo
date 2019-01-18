@@ -113,12 +113,23 @@ def file2cib_elem(f):
 def handle_status_child(allNodes, node, elem=None, child_type=None, xmltag="", jsontag=""):
     for item in elem.iterchildren():
         # store old values
-        old_childtype = child_type
-        old_xmltag = xmltag
-        old_jsontag = jsontag
+        #old_childtype = child_type
+        #old_xmltag = xmltag
+        #old_jsontag = jsontag
 
         # do have children
         if len(item) != 0:
+            child_type = item.tag
+            xmltag = item.tag
+            jsontag = item.tag
+
+            node.append(ChildNode(item.tag, child_type, xmltag, jsontag))
+            new_node = Node(item.tag)
+            if not node_exists(allNodes, new_node):
+                allNodes.append(new_node)
+            handle_status_child(allNodes, new_node, elem=item)
+        # no child
+        elif item.attrib:
             # his children are all same
             if len(set(item)) == 1:
                 child_type = "slice"
@@ -126,17 +137,7 @@ def handle_status_child(allNodes, node, elem=None, child_type=None, xmltag="", j
                 child_type = item.tag
             xmltag = item.tag
             jsontag = item.tag
-
-            node.append(ChildNode(item.tag, item.tag, xmltag, jsontag))
-            new_node = Node(item.tag)
-            if not node_exists(allNodes, new_node):
-                allNodes.append(new_node)
-            handle_status_child(allNodes, new_node, elem=item)
-        # no child
-        elif item.attrib:
-            xmltag = item.tag
-            jsontag = item.tag
-            node.append(ChildNode(item.tag, item.tag, xmltag, jsontag))
+            node.append(ChildNode(item.tag, child_type, xmltag, jsontag))
             new_node = Node(item.tag)
             if not node_exists(allNodes, new_node):
                 allNodes.append(new_node)
@@ -147,9 +148,9 @@ def handle_status_child(allNodes, node, elem=None, child_type=None, xmltag="", j
         #    allNodes.append(new_node)
 
         # recover old values
-        childtype = old_childtype
-        xmltag = old_xmltag
-        jsontag = old_jsontag
+        #childtype = old_childtype
+        #xmltag = old_xmltag
+        #jsontag = old_jsontag
 
 
 def handle_schema_child(allNodes, node, rng=None, elem=None, root=None, child_type=None, xmltag="", jsontag=""):
