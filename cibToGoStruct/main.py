@@ -113,11 +113,14 @@ def file2cib_elem(f):
 def handle_status_child(allNodes, node, elem=None, child_type="string"):
     for item in elem.iterchildren():
         if len(item) != 0:
-            handle_status_child(allNodes, node, elem=item)
+            node.append(ChildNode(item.tag, child_type))
+            new_node = Node(item.tag)
+            if not node_exists(allNodes, new_node):
+                allNodes.append(new_node)
+            handle_status_child(allNodes, new_node, elem=item)
         else:
-            print(item.tag)
-            print(item.attrib)
-        #node.append(ChildNode(item.tag, child_type))
+            for key in item.attrib.keys():
+                node.append(ChildNode(key, child_type))
         #new_node = Node(item.tag)
         #if not node_exists(allNodes, new_node):
         #    allNodes.append(new_node)
@@ -238,6 +241,7 @@ def gen_struct(f):
                 handle_status_child(allNodes, node, elem=elem)
                 #for node in allNodes:
                 #    print(node)
+                #    print("")
                 break
 
         name = elem.get('name')
@@ -245,6 +249,9 @@ def gen_struct(f):
             node = Node("cib")
             allNodes.append(node)
             handle_schema_child(allNodes, node, elem=elem)
+            #for node in allNodes:
+            #    print(node)
+            #    print("")
             break
 
 
