@@ -316,7 +316,8 @@ def run():
         print("Error: Please install pacemaker-cli first!")
         sys.exit(rc)
 
-    start_files = ["/usr/share/pacemaker/pacemaker.rng", "crm_mon.xml"]
+    start_files = ["crm_mon.xml"]
+    #start_files = ["/usr/share/pacemaker/pacemaker.rng", "crm_mon.xml"]
     for start_file in start_files:
         if not os.path.exists(start_file):
             print("Error: %s not exists!" % start_file)
@@ -326,7 +327,7 @@ def run():
         if rc != 0:
             print("Error: gen_struct for %s failed!" % start_file)
             sys.exit(rc)
-        print("\n\n\n\n")
+
 
 if __name__ == '__main__':
     run()
