@@ -121,12 +121,13 @@ def handle_status_child(allNodes, node, elem=None, child_type=None, xmltag="", j
 
         # do have children
         if len(item) != 0:
-            child_type = item.tag
+            name = "{}_{}".format(elem.tag, item.tag)
+            child_type = name
             xmltag = item.tag
             jsontag = item.tag
 
-            node.append(ChildNode(item.tag, child_type, xmltag, jsontag))
-            new_node = Node(item.tag)
+            node.append(ChildNode(name, child_type, xmltag, jsontag))
+            new_node = Node(name)
             if not node_exists(allNodes, new_node):
                 allNodes.append(new_node)
             if len(set([x.tag for x in item])) == 1:
@@ -135,12 +136,13 @@ def handle_status_child(allNodes, node, elem=None, child_type=None, xmltag="", j
         # no child
         elif item.attrib:
             # his children are all same
+            name = "{}_{}".format(elem.tag, item.tag)
             if child_type != "slice":
-                child_type = item.tag
+                child_type = name
             xmltag = item.tag
             jsontag = item.tag
-            node.append(ChildNode(item.tag, child_type, xmltag, jsontag))
-            new_node = Node(item.tag)
+            node.append(ChildNode(name, child_type, xmltag, jsontag))
+            new_node = Node(name)
             if not node_exists(allNodes, new_node):
                 allNodes.append(new_node)
             for key in item.attrib.keys():
