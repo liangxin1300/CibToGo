@@ -28,7 +28,7 @@ goStructTemplate = """
 {%- endmacro -%}
 
 type {{ convert_name(node.name) }} struct {
-    XMLNAME    xml.Name    `xml:"{{ node.name }}" json:"-"`
+    XMLNAME    xml.Name    `xml:"{{ node.realname }}" json:"-"`
 {% for child in node.children %}
     {{ convert_name(child.name) }}{{ struct_type(child) }}{{ struct_tag(child) }}
 {% endfor %}
@@ -55,8 +55,12 @@ class Node:
     '''
     stand for element
     '''
-    def __init__(self, name=None):
+    def __init__(self, name=None, realname=None):
         self.name = name
+        if realname is None:
+            self.realname = name
+        else:
+            self.realname = realname
         self.children = []
 
     def __str__(self):
@@ -127,7 +131,7 @@ def handle_status_child(allNodes, node, elem=None, child_type=None, xmltag="", j
             jsontag = item.tag
 
             node.append(ChildNode(name, child_type, xmltag, jsontag))
-            new_node = Node(name)
+            new_node = Node(name, item.tag)
             if not node_exists(allNodes, new_node):
                 allNodes.append(new_node)
             if len(set([x.tag for x in item])) == 1:
@@ -142,7 +146,7 @@ def handle_status_child(allNodes, node, elem=None, child_type=None, xmltag="", j
             xmltag = item.tag
             jsontag = item.tag
             node.append(ChildNode(name, child_type, xmltag, jsontag))
-            new_node = Node(name)
+            new_node = Node(name, item.tag)
             if not node_exists(allNodes, new_node):
                 allNodes.append(new_node)
             for key in item.attrib.keys():
