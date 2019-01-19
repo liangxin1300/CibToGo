@@ -112,6 +112,8 @@ def file2cib_elem(f):
 
 def handle_status_child(allNodes, node, elem=None, child_type=None, xmltag="", jsontag=""):
     for item in elem.iterchildren():
+        if item.tag in ["cluster_options"]:
+            continue
         # store old values
         #old_childtype = child_type
         #old_xmltag = xmltag
@@ -133,7 +135,8 @@ def handle_status_child(allNodes, node, elem=None, child_type=None, xmltag="", j
         # no child
         elif item.attrib:
             # his children are all same
-            child_type = child_type
+            if child_type != "slice":
+                child_type = item.tag
             xmltag = item.tag
             jsontag = item.tag
             node.append(ChildNode(item.tag, child_type, xmltag, jsontag))
