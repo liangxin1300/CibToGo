@@ -268,9 +268,6 @@ def gen_struct(f):
                 node = Node(elem.tag)
                 allNodes.append(node)
                 handle_status_child(allNodes, node, elem=elem)
-                for node in allNodes:
-                    print(node)
-                    print("")
                 break
 
         name = elem.get('name')
@@ -278,13 +275,7 @@ def gen_struct(f):
             node = Node("cib")
             allNodes.append(node)
             handle_schema_child(allNodes, node, elem=elem)
-            for node in allNodes:
-                print(node)
-                print("")
             break
-
-    if f == "crm_mon.xml":
-        return       
 
     res = """
     package main
