@@ -263,7 +263,7 @@ def gen_struct(f):
 
     root = file2cib_elem(f)
     if root is None:
-        return -1
+        return None
 
     allNodes = []
 
@@ -283,23 +283,12 @@ def gen_struct(f):
             handle_schema_child(allNodes, node, elem=elem)
             break
 
-    res = """
-    package main
-
-    import (
-        "encoding/xml"
-)
-
-    """
+    res = ""
     for node in allNodes:
         env = Environment(trim_blocks=True)
         env.globals['convert_name'] = convert_name
         res += env.from_string(goStructTemplate).render(node=node) + "\n\n"
-
-    with open("api_structs.go", 'w') as f:
-        f.write(res)
-    run_cmd("go fmt api_structs.go")
-    return 0
+    return res
 
 
 def run_cmd(cmd):
@@ -322,17 +311,32 @@ def run():
         print("Error: Please install pacemaker-cli first!")
         sys.exit(rc)
 
-    start_files = ["crm_mon.xml"]
-    #start_files = ["/usr/share/pacemaker/pacemaker.rng", "crm_mon.xml"]
+
+    header = """
+    package main
+
+    import (
+        "encoding/xml"
+)
+
+    """
+    contents = header
+    #start_files = ["crm_mon.xml"]
+    start_files = ["/usr/share/pacemaker/pacemaker.rng", "crm_mon.xml"]
     for start_file in start_files:
         if not os.path.exists(start_file):
             print("Error: %s not exists!" % start_file)
             sys.exit(-1)
     
-        rc = gen_struct(start_file)
-        if rc != 0:
+        res = gen_struct(start_file)
+        if res is None:
             print("Error: gen_struct for %s failed!" % start_file)
             sys.exit(rc)
+        contents += res
+
+    with open("api_structs.go", 'w') as f:
+        f.write(contents)
+    run_cmd("go fmt api_structs.go")
 
 
 if __name__ == '__main__':
