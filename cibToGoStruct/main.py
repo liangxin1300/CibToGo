@@ -130,7 +130,7 @@ def handle_status_child(allNodes, node, elem=None, child_type=None, xmltag="", j
             xmltag = item.tag
             jsontag = item.tag
 
-            if elem.tag == "resources":
+            if elem.tag in ["resources", "group", "clone"]:
                 child_type = "slice"
             node.append(ChildNode(name, child_type, xmltag, jsontag))
             new_node = Node(name, item.tag)
