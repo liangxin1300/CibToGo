@@ -32,6 +32,9 @@ type {{ convert_name(node.name) }} struct {
 {% for child in node.children %}
     {{ convert_name(child.name) }}{{ struct_type(child) }}{{ struct_tag(child) }}
 {% endfor %}
+{%- if node.name ==  "resources_clone" %}
+    CloneGroup []*CloneGroup `xml:"group" json:"group"`
+{%- endif -%}
 }
 """
 
