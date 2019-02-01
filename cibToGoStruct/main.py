@@ -134,6 +134,9 @@ def handle_status_child(allNodes, node, elem=None, child_type=None, xmltag="", j
             new_node = Node(name, item.tag)
             if not node_exists(allNodes, new_node):
                 allNodes.append(new_node)
+            if item.attrib:
+                for key in item.attrib.keys():
+                    new_node.append(ChildNode(key, "string", key+",attr", key))
             if len(set([x.tag for x in item])) == 1:
                 child_type = "slice"
             handle_status_child(allNodes, new_node, elem=item, child_type=child_type)
