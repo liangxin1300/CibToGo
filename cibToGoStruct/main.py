@@ -36,7 +36,7 @@ goStructTemplate = """
 {%- endmacro -%}
 
 type {{ convert_name(node.name) }} struct {
-    XMLNAME    xml.Name    `xml:"{{ node.name }}" json:"-"`
+    XMLName    xml.Name    `xml:"{{ node.name }}" json:"-"`
 {% for child in node.children %}
     {{ convert_name(child.name) }}{{ struct_type(child) }}{{ struct_tag(child) }}
 {% endfor %}
